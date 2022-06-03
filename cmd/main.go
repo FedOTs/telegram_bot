@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"log"
 	"net/http"
 	"os"
@@ -25,13 +24,32 @@ func main() {
 		log.Printf("Error telegram bot %v", err)
 	}
 
-	updates := bot.ListenForWebhook("/" + bot.Token)
+	info, err := bot.GetWebhookInfo()
 
-	http.ListenAndServe("0.0.0.0:8091", nil)
-
-	for update := range updates {
-		fmt.Println(update)
+	if err != nil {
+		log.Printf("bot.GetWebhookInfo() err : %v", err)
 	}
 
-	fmt.Println(conf, configString)
+	log.Printf("bot.GetWebhookInfo(): %v\n", info)
+
+	if info.LastErrorDate != 0 {
+		log.Printf("Telegram callback failed: %s", info.LastErrorMessage)
+	}
+
+	updates := bot.ListenForWebhook("/" + bot.Token)
+
+	go http.ListenAndServe("0.0.0.0:8091", nil)
+
+	for update := range updates {
+		//log.Printf("update %v\n", update)
+		if update.Message != nil { // If we got a message
+			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
+
+			//msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			//msg.ReplyToMessageID = update.Message.MessageID
+
+			//bot.Send(msg)
+		}
+	}
+
 }
