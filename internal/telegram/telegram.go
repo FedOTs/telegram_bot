@@ -24,3 +24,11 @@ func StartBot(token string, webhook string) (bot *tgbotapi.BotAPI, error error) 
 
 	return bot_, nil
 }
+
+func SendMessage(update tgbotapi.Update, bot *tgbotapi.BotAPI) (error error) {
+	msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+	msg.ReplyToMessageID = update.Message.MessageID
+	bot.Send(msg)
+
+	return nil
+}
