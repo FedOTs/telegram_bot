@@ -13,13 +13,14 @@ type Database struct {
 	DbName   string `json:"dbname"`
 }
 
-type TelegramToken struct {
-	Token string `json:"token"`
+type Telegram struct {
+	Token   string `json:"token"`
+	WebHook string `json:"webhook"`
 }
 
 type Config struct {
-	Database      `json:"database"`
-	TelegramToken `json:"tg_token"`
+	Database `json:"database"`
+	Telegram `json:"telegram"`
 }
 
 func LoadConfiguration(file string) (Config, error) {
@@ -44,5 +45,9 @@ func (c *Config) GetConnString() string {
 }
 
 func (c *Config) GetTgTokenString() string {
-	return c.TelegramToken.Token
+	return c.Telegram.Token
+}
+
+func (c *Config) GetTgWebHookString() string {
+	return c.Telegram.WebHook
 }
