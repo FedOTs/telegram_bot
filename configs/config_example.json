@@ -4,5 +4,6 @@
         "user": "user",
         "password": "password",
         "dbname" : "dbname"
-    }
+    },
+    "tg_token":"token"
 }

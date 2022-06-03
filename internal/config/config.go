@@ -13,8 +13,13 @@ type Database struct {
 	DbName   string `json:"dbname"`
 }
 
+type TelegramToken struct {
+	Token string `json:"token"`
+}
+
 type Config struct {
-	Database `json:"database"`
+	Database      `json:"database"`
+	TelegramToken `json:"tg_token"`
 }
 
 func LoadConfiguration(file string) (Config, error) {
@@ -36,4 +41,8 @@ func LoadConfiguration(file string) (Config, error) {
 
 func (c *Config) GetConnString() string {
 	return fmt.Sprintf("server=%s;user id=%s;password=%s;database=%s", c.Database.Host, c.Database.User, c.Database.Password, c.Database.DbName)
+}
+
+func (c *Config) GetTgTokenString() string {
+	return c.TelegramToken.Token
 }
