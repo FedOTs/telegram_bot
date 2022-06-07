@@ -39,10 +39,24 @@ func StartBot(token string, webhook string) (error error) {
 
 	go http.ListenAndServe("0.0.0.0:8091", nil)
 
+	telegramFSM := newTelegramFSM()
+	event := SayHello
+	context := PhoneContext{}
 	for update := range updates {
 		if update.Message != nil { // If we got a message
-			log.Printf("[%s] %s", update.Message.From.UserName, update.Message.Text)
-			msg := tgbotapi.NewMessage(update.Message.Chat.ID, update.Message.Text)
+			if event == GetPhone {
+				if update.Message.Contact != nil {
+					context = PhoneContext{number: update.Message.Contact.PhoneNumber}
+				}
+			}
+			if event == SayHello {
+				telegramFSM.SendEvent(event, nil)
+			} else {
+				telegramFSM.SendEvent(event, context)
+			}
+
+			log.Printf("[%s] %s", update.Message.From.UserName, context.Answer())
+			msg := tgbotapi.NewMessage(update.Message.Chat.ID, context.Answer())
 			msg.ReplyToMessageID = update.Message.MessageID
 			bot.Send(msg)
 		}
